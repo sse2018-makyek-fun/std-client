@@ -42,8 +42,8 @@
 #define SHOT 6
 
 // flags for two players
-#define PLAYER_FLAG_1 1
-#define PLAYER_FLAG_2 2
+#define PLAYER_FLAG_1 0
+#define PLAYER_FLAG_2 1
 
 // OPTION
 #define START "START"
