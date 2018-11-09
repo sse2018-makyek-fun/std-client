@@ -11,26 +11,26 @@
 #define TANK1_LEFT 'a'
 #define TANK1_RIGHT 'd'
 
-#define BULLET1_UP '1'
-#define BULLET1_DOWN '2'
-#define BULLET1_LEFT '3'
-#define BULLET1_RIGHT '4'
+#define BULLET1_UP 'u'
+#define BULLET1_DOWN 'k'
+#define BULLET1_LEFT 'j'
+#define BULLET1_RIGHT 'l'
 
-#define TANK2_UP 'i'
-#define TANK2_DOWN 'k'
-#define TANK2_LEFT 'j'
-#define TANK2_RIGHT 'l'
+#define TANK2_UP 'W'
+#define TANK2_DOWN 'S'
+#define TANK2_LEFT 'A'
+#define TANK2_RIGHT 'D'
 
-#define BULLET2_UP '7'
-#define BULLET2_DOWN '8'
-#define BULLET2_LEFT '9'
-#define BULLET2_RIGHT '0'
+#define BULLET2_UP 'U'
+#define BULLET2_DOWN 'K'
+#define BULLET2_LEFT 'J'
+#define BULLET2_RIGHT 'L'
 
 #define EMPTY '.'
 #define OBSTACLE '|'
 #define GRASS '?'
-#define FOOD1 'z'
-#define FOOD3 'c'
+#define FOOD1 '1'
+#define FOOD9 '9'
 
 // command
 #define TURN_TO_UP  0
@@ -50,6 +50,14 @@
 #define ROUND "ROUND"
 #define END "END"
 
+// score
+#define SCORE_KILL 4
+#define SCORE_FOOD1 1
+#define SCORE FOOD9 9
+
+#define MAX_BOARD_SIZE 100
+#define MAX_TANKS_TOTAL 10
+
 struct Position {
   int x;
   int y;
@@ -58,10 +66,10 @@ struct Position {
 int own_flag;
 int board_size;
 int bullet_v;
-char** board;
+char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
 int own_tanks_total;
-struct Position* own_tank_positions;
-int* commands;
+struct Position own_tank_positions[MAX_TANKS_TOTAL];
+int commands[MAX_TANKS_TOTAL];
 
 
 /**
@@ -90,16 +98,7 @@ void AiEnd() {
  */
 
 void Start() {
-  scanf("%d%d%d%d", &board_size, &own_flag, &own_tanks_total, &bullet_v);
-  own_tank_positions = (struct Position*) malloc(sizeof(struct Position) * own_tanks_total);
-
-  board = (char **) malloc(sizeof(char *) * board_size);
-  board[0] = (char *) malloc(sizeof(char) * board_size * board_size);
-  for (int i = 1; i < board_size; i++) {
-    board[i] = board[i - 1] + board_size;
-  }
-
-  commands = (int *) malloc(sizeof(int) * own_tanks_total);
+  scanf("%d%d%d", &board_size, &own_flag, &bullet_v);
 }
 
 int IsOwnTank(char chr) {
@@ -131,10 +130,6 @@ void RoundEnd() {
 }
 
 void End() {
-  free(own_tank_positions);
-  free(board[0]);
-  free(board);
-  free(commands);
 }
 
 int main() {
