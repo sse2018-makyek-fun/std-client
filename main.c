@@ -160,7 +160,7 @@ BOOL place(int x, int y, OPTION option, int cur_flag) {
   }
 
   // 夹
-  int custodian_dir[4][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, 2}};
+  int custodian_dir[4][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
   for (int i = 0; i < 4; i++) {
     int x1 = new_x + custodian_dir[i][0];
     int y1 = new_y + custodian_dir[i][1];
@@ -238,7 +238,7 @@ void loop() {
       sscanf(buffer, "%s %d", tmp, &x);
       end(x);
     }
-    print_board();
+//    print_board();
   }
 }
 
