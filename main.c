@@ -46,7 +46,7 @@ void debug(const char *str) {
   fflush(stdout);
 }
 
-void print_board() {
+void printBoard() {
   char visual_board[BOARD_SIZE][BOARD_SIZE] = {0};
   for (int i = 0; i < BOARD_SIZE; i++) {
     for (int j = 0; j < BOARD_SIZE; j++) {
@@ -62,7 +62,7 @@ void print_board() {
   }
 }
 
-BOOL is_in_bound(int x, int y) {
+BOOL isInBound(int x, int y) {
   return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
 }
 
@@ -95,7 +95,7 @@ struct Command findValidPos(const char board[BOARD_SIZE][BOARD_SIZE], int flag) 
         }
         int new_x = x + delta[0];
         int new_y = y + delta[1];
-        if (is_in_bound(new_x, new_y) && board[new_x][new_y] == EMPTY) {
+        if (isInBound(new_x, new_y) && board[new_x][new_y] == EMPTY) {
           command.x = x;
           command.y = y;
           command.option = k;
@@ -137,7 +137,7 @@ BOOL place(int x, int y, OPTION option, int cur_flag) {
   int new_x = x + DIR[option][0];
   int new_y = y + DIR[option][1];
   // 移动之后的位置超出边界, 或者不是空地
-  if (!is_in_bound(new_x, new_y)) {
+  if (!isInBound(new_x, new_y)) {
     return FALSE;
   }
 
@@ -153,7 +153,7 @@ BOOL place(int x, int y, OPTION option, int cur_flag) {
     int y1 = new_y + intervention_dir[i][1];
     int x2 = new_x - intervention_dir[i][0];
     int y2 = new_y - intervention_dir[i][1];
-    if (is_in_bound(x1, y1) && is_in_bound(x2, y2) && board[x1][y1] == cur_other_flag && board[x2][y] == cur_other_flag) {
+    if (isInBound(x1, y1) && isInBound(x2, y2) && board[x1][y1] == cur_other_flag && board[x2][y] == cur_other_flag) {
       board[x1][y1] = cur_flag;
       board[x2][y2] = cur_flag;
     }
@@ -166,7 +166,7 @@ BOOL place(int x, int y, OPTION option, int cur_flag) {
     int y1 = new_y + custodian_dir[i][1];
     int x2 = new_x + custodian_dir[i][0] * 2;
     int y2 = new_y + custodian_dir[i][1] * 2;
-    if (is_in_bound(x1, y1) && is_in_bound(x2, y2) && board[x2][y2] == cur_flag && board[x1][y1] == cur_other_flag) {
+    if (isInBound(x1, y1) && isInBound(x2, y2) && board[x2][y2] == cur_flag && board[x1][y1] == cur_other_flag) {
       board[x1][y1] = cur_flag;
     }
   }
@@ -204,7 +204,7 @@ void end(int x) {
 }
 
 void loop() {
-  freopen("../input", "r", stdin);
+//  freopen("../input", "r", stdin);
   while (TRUE)
   {
     memset(buffer, 0, sizeof(buffer));
@@ -238,7 +238,7 @@ void loop() {
       sscanf(buffer, "%s %d", tmp, &x);
       end(x);
     }
-//    print_board();
+//    printBoard();
   }
 }
 
