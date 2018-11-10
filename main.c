@@ -153,7 +153,7 @@ BOOL place(int x, int y, OPTION option, int cur_flag) {
     int y1 = new_y + intervention_dir[i][1];
     int x2 = new_x - intervention_dir[i][0];
     int y2 = new_y - intervention_dir[i][1];
-    if (isInBound(x1, y1) && isInBound(x2, y2) && board[x1][y1] == cur_other_flag && board[x2][y] == cur_other_flag) {
+    if (isInBound(x1, y1) && isInBound(x2, y2) && board[x1][y1] == cur_other_flag && board[x2][y2] == cur_other_flag) {
       board[x1][y1] = cur_flag;
       board[x2][y2] = cur_flag;
     }
