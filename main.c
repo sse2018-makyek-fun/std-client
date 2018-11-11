@@ -4,6 +4,7 @@
 
 // board information
 #define BOARD_SIZE 8
+#define BOARD_HALF_SIZE (BOARD_SIZE/2)
 #define EMPTY 0
 #define BLACK 1
 #define WHITE 2
@@ -19,6 +20,10 @@ typedef int OPTION;
 #define DOWN 1
 #define LEFT 2
 #define RIGHT 3
+#define UP_LEFT 4
+#define UP_RIGHT 5
+#define DOWN_LEFT 6
+#define DOWN_RIGHT 7
 
 #define MAX_BYTE 10000
 
@@ -39,7 +44,7 @@ char board[BOARD_SIZE][BOARD_SIZE] = {0};
 int me_flag;
 int other_flag;
 
-const int DIR[4][2] = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
+const int DIR[8][2] = { {-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1} };
 
 void debug(const char *str) {
   printf("DEBUG %s\n", str);
@@ -86,7 +91,7 @@ void initAI(int me) {
 
 struct Command findValidPos(const char board[BOARD_SIZE][BOARD_SIZE], int flag) {
   struct Command command = {0, 0, 0};
-  for (int k = 0; k < 4; k++) {
+  for (int k = 0; k < 8; k++) {
     const int* delta = DIR[k];
     for (int x = 0; x < BOARD_SIZE; x++) {
       for (int y = 0; y < BOARD_SIZE; y++) {
@@ -174,18 +179,22 @@ BOOL place(int x, int y, OPTION option, int cur_flag) {
   return TRUE;
 }
 
+
+//........
+//........
+//XXXX....
+//....XXXX
+//OOOO....
+//....OOOO
+//........
+//........
 void start(int flag) {
   memset(board, 0, sizeof(board));
-
-  char* first_row = board[0];
-  char* third_row = board[2];
-  char* bottom_first_row = board[BOARD_SIZE - 1];
-  char* bottom_third_tow = board[BOARD_SIZE - 3];
-  for (int i = 0; i < BOARD_SIZE; i++) {
-    first_row[i] = WHITE;
-    third_row[i] = WHITE;
-    bottom_first_row[i] = BLACK;
-    bottom_third_tow[i] = BLACK;
+  for (int i = 0; i < BOARD_HALF_SIZE; i++) {
+    board[2][i] = WHITE;
+    board[3][BOARD_HALF_SIZE + i] = WHITE;
+    board[4][i] = BLACK;
+    board[5][BOARD_HALF_SIZE + i] = BLACK;
   }
 
   initAI(flag);
