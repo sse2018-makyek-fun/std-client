@@ -182,19 +182,19 @@ BOOL place(int x, int y, OPTION option, int cur_flag) {
 
 //........
 //........
+//..XXXX..
 //XXXX....
-//....XXXX
-//OOOO....
 //....OOOO
+//..OOOO..
 //........
 //........
 void start(int flag) {
   memset(board, 0, sizeof(board));
   for (int i = 0; i < BOARD_HALF_SIZE; i++) {
-    board[2][i] = WHITE;
-    board[3][BOARD_HALF_SIZE + i] = WHITE;
-    board[4][i] = BLACK;
-    board[5][BOARD_HALF_SIZE + i] = BLACK;
+    board[2][2 + i] = WHITE;
+    board[3][i] = WHITE;
+    board[4][BOARD_HALF_SIZE + i] = BLACK;
+    board[5][2 + i] = BLACK;
   }
 
   initAI(flag);
