@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <uniwbrk.h>
 
 // board information
-#define BOARD_SIZE 8
+#define BOARD_SIZE 12
 #define BOARD_HALF_SIZE (BOARD_SIZE/2)
 #define EMPTY 0
 #define BLACK 1
@@ -152,8 +153,8 @@ BOOL place(int x, int y, OPTION option, int cur_flag) {
   int cur_other_flag = 3 - cur_flag;
 
   // 挑
-  int intervention_dir[2][2] = {{1, 0}, {0, 1}};
-  for (int i = 0; i < 2; i++) {
+  int intervention_dir[4][2] = { {1, 0}, {0, 1}, {1, 1}, {1, -1} };
+  for (int i = 0; i < 4; i++) {
     int x1 = new_x + intervention_dir[i][0];
     int y1 = new_y + intervention_dir[i][1];
     int x2 = new_x - intervention_dir[i][0];
@@ -165,8 +166,8 @@ BOOL place(int x, int y, OPTION option, int cur_flag) {
   }
 
   // 夹
-  int custodian_dir[4][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-  for (int i = 0; i < 4; i++) {
+  int custodian_dir[8][2] = { {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1} };
+  for (int i = 0; i < 8; i++) {
     int x1 = new_x + custodian_dir[i][0];
     int y1 = new_y + custodian_dir[i][1];
     int x2 = new_x + custodian_dir[i][0] * 2;
@@ -190,11 +191,17 @@ BOOL place(int x, int y, OPTION option, int cur_flag) {
 //........
 void start(int flag) {
   memset(board, 0, sizeof(board));
-  for (int i = 0; i < BOARD_HALF_SIZE; i++) {
+
+  for (int i = 0; i < 3; i++) {
     board[2][2 + i] = WHITE;
-    board[3][i] = WHITE;
-    board[4][BOARD_HALF_SIZE + i] = BLACK;
-    board[5][2 + i] = BLACK;
+    board[6][6 + i] = WHITE;
+    board[5][3 + i] = BLACK;
+    board[9][7 + i] = BLACK;
+  }
+
+  for (int i = 0; i < 2; i++) {
+    board[8 + i][2] = WHITE;
+    board[2 + i][9] = BLACK;
   }
 
   initAI(flag);
