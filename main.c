@@ -1,11 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <uniwbrk.h>
 
 // board information
 #define BOARD_SIZE 12
-#define BOARD_HALF_SIZE (BOARD_SIZE/2)
 #define EMPTY 0
 #define BLACK 1
 #define WHITE 2
