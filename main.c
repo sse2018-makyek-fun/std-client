@@ -25,6 +25,8 @@ typedef int OPTION;
 #define JUMP_DR 7
 
 #define MAX_BYTE 10000
+#define TO_STRING(x) "%" #x "[^\n]"
+#define LINE_FORMAT(l) TO_STRING(l)
 
 #define START "START"
 #define PLACE "PLACE"
@@ -38,7 +40,6 @@ struct Command
     OPTION option;
 };
 
-char buffer[MAX_BYTE] = {0};
 char board[BOARD_SIZE][BOARD_SIZE] = {0};
 int me_flag;
 int other_flag;
@@ -78,6 +79,16 @@ void printBoard()
 BOOL isInBound(int x, int y)
 {
     return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
+}
+
+int max(int a, int b)
+{
+    return a > b ? a : b;
+}
+
+int min (int a, int b)
+{
+    return a < b ? a : b;
 }
 
 /**
@@ -143,61 +154,16 @@ struct Command aiTurn(const char board[BOARD_SIZE][BOARD_SIZE], int me)
     return preferedPos;
 }
 
-/**
- * 你的代码结束
- */
-
-BOOL place(int x, int y, OPTION option, int cur_flag)
+void place(int x0, int y0, int x1, int y1, int cur_flag)
 {
-    // 移动之前的位置没有我方棋子
-    if (board[x][y] != cur_flag)
-    {
-        return FALSE;
+    int x_mid, y_mid;
+    board[x0][y0] = EMPTY;
+    board[x1][y1] = cur_flag;
+    x_mid = (x0 + y0) / 2;
+    y_mid = (y0 + y1) / 2; 
+    if (x_mid != min(x0, x1)) {
+        board[x_mid][y_mid] = 0;
     }
-
-    int new_x = x + DIR[option][0];
-    int new_y = y + DIR[option][1];
-    // 移动之后的位置超出边界, 或者不是空地
-    if (!isInBound(new_x, new_y) || board[new_x][new_y] != EMPTY)
-    {
-        return FALSE;
-    }
-
-    board[x][y] = EMPTY;
-    board[new_x][new_y] = cur_flag;
-
-    int cur_other_flag = 3 - cur_flag;
-
-    // 挑
-    int intervention_dir[4][2] = {{1, 0}, {0, 1}, {1, 1}, {1, -1}};
-    for (int i = 0; i < 4; i++)
-    {
-        int x1 = new_x + intervention_dir[i][0];
-        int y1 = new_y + intervention_dir[i][1];
-        int x2 = new_x - intervention_dir[i][0];
-        int y2 = new_y - intervention_dir[i][1];
-        if (isInBound(x1, y1) && isInBound(x2, y2) && board[x1][y1] == cur_other_flag && board[x2][y2] == cur_other_flag)
-        {
-            board[x1][y1] = cur_flag;
-            board[x2][y2] = cur_flag;
-        }
-    }
-
-    // 夹
-    int custodian_dir[8][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
-    for (int i = 0; i < 8; i++)
-    {
-        int x1 = new_x + custodian_dir[i][0];
-        int y1 = new_y + custodian_dir[i][1];
-        int x2 = new_x + custodian_dir[i][0] * 2;
-        int y2 = new_y + custodian_dir[i][1] * 2;
-        if (isInBound(x1, y1) && isInBound(x2, y2) && board[x2][y2] == cur_flag && board[x1][y1] == cur_other_flag)
-        {
-            board[x1][y1] = cur_flag;
-        }
-    }
-
-    return TRUE;
 }
 
 //.X.X.X.X
@@ -229,52 +195,64 @@ void start(int flag)
     initAI(flag);
 }
 
-void turn()
-{
-    // AI
-    struct Command command = aiTurn((const char(*)[BOARD_SIZE])board, me_flag);
-    place(command.x, command.y, command.option, me_flag);
-    printf("%d %d %d\n", command.x, command.y, command.option);
-    fflush(stdout);
-}
+// void turn()
+// {
+//     // AI
+//     struct Command command = aiTurn((const char(*)[BOARD_SIZE])board, me_flag);
+//     place(command.x, command.y, command.option, me_flag);
+//     printf("%d %d %d\n", command.x, command.y, command.option);
+//     fflush(stdout);
+// }
 
 void end(int x)
 {
 }
 
+/**
+ * 你的代码结束
+ */
+
 void loop()
 {
     //  freopen("../input", "r", stdin);
-    char tmp[MAX_BYTE] = {0};
-    int x, y;
+    char tag[10] = {0};
+    char buffer[MAX_BYTE + 1] = {0};
+    int x0, y0, x1, y1, step;
     OPTION option;
     while (TRUE)
     {
+        memset(tag, 0, sizeof(tag));
         memset(buffer, 0, sizeof(buffer));
-        gets(buffer);
-        memset(tmp, 0, sizeof(tmp));
-        if (strstr(buffer, START))
+        scanf("%s", tag);
+        if (strcmp(tag, START) == 0)
         {
-            sscanf(buffer, "%s %d", tmp, &me_flag);
+            scanf("%d", &me_flag);
             other_flag = 3 - me_flag;
             start(me_flag);
             printf("OK\n");
             fflush(stdout);
         }
-        else if (strstr(buffer, PLACE))
+        else if (strcmp(tag, PLACE) == 0)
         {
-            sscanf(buffer, "%s %d %d %d", tmp, &x, &y, &option);
-            place(x, y, option, other_flag);
+            scanf("%d", &step);
+            scanf("%d,%d", &x0, &y0);
+            for (int i = 1; i < step; i++)
+            {
+                scanf("%d,%d", &x1, &y1);
+                place(x0, y0, x1, y1, other_flag);
+                x0 = x1;
+                y0 = y1;
+            }
         }
-        else if (strstr(buffer, TURN))
-        {
-            turn();
-        }
-        else if (strstr(buffer, END))
-        {
-            sscanf(buffer, "%s %d", tmp, &x);
-            end(x);
-        }
+        // else if (strcmp(tag, TURN)  == 0)
+        // {
+        //     turn();
+        // }
+        // else if (strcmp(tag, END) == 0)
+        // {
+        //     scanf("%d", &x);
+        //     end(x);
+        // }
         //    printBoard();
     }
 }
