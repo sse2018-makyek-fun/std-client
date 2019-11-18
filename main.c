@@ -69,6 +69,22 @@ BOOL isInBound(int x, int y)
     return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
 }
 
+void place(struct Command cmd, int cur_flag)
+{
+    int x_mid, y_mid;
+    for (int i = 0; i < cmd.numStep - 1; i++)
+    {
+        board[cmd.x[i]][cmd.y[i]] = EMPTY;
+        board[cmd.x[i + 1]][cmd.y[i + 1]] = cur_flag;
+        if (abs(cmd.x[i] - cmd.x[i + 1]) == 2)
+        {
+            x_mid = (cmd.x[i] - cmd.x[i + 1]) / 2;
+            y_mid = (cmd.y[i] - cmd.y[i + 1]) / 2;
+            board[x_mid][y_mid] = EMPTY;
+        }
+    }
+}
+
 /**
  * YOUR CODE BEGIN
  * 你的代码开始
@@ -105,21 +121,9 @@ struct Command aiTurn(const char board[BOARD_SIZE][BOARD_SIZE], int me)
     return command;
 }
 
-void place(struct Command cmd, int cur_flag)
-{
-    int x_mid, y_mid;
-    for (int i = 0; i < cmd.numStep - 1; i++)
-    {
-        board[cmd.x[i]][cmd.y[i]] = EMPTY;
-        board[cmd.x[i + 1]][cmd.y[i + 1]] = cur_flag;
-        if (abs(cmd.x[i] - cmd.x[i + 1]) == 2)
-        {
-            x_mid = (cmd.x[i] - cmd.x[i + 1]) / 2;
-            y_mid = (cmd.y[i] - cmd.y[i + 1]) / 2;
-            board[x_mid][y_mid] = EMPTY;
-        }
-    }
-}
+/**
+ * 你的代码结束
+ */
 
 //.X.X.X.X
 //X.X.X.X.
@@ -167,10 +171,6 @@ void turn()
 void end(int x)
 {
 }
-
-/**
- * 你的代码结束
- */
 
 void loop()
 {
