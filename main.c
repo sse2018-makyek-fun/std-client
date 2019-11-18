@@ -181,6 +181,7 @@ void loop()
         .x = {0},
         .y = {0},
         .numStep = 0};
+    int status;
     while (TRUE)
     {
         memset(tag, 0, sizeof(tag));
@@ -207,11 +208,11 @@ void loop()
         {
             turn();
         }
-        // else if (strcmp(tag, END) == 0)
-        // {
-        //     scanf("%d", &x);
-        //     end(x);
-        // }
+        else if (strcmp(tag, END) == 0)
+        {
+            scanf("%d", &status);
+            end(status);
+        }
         //    printBoard();
     }
 }
