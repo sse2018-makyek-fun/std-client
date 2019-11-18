@@ -13,20 +13,20 @@ typedef int BOOL;
 #define TRUE 1
 #define FALSE 0
 
-// option
-typedef int OPTION;
-#define UP_LEFT 0
-#define UP_RIGHT 1
-#define DOWN_LEFT 2
-#define DOWN_RIGHT 3
-#define JUMP_UL 4
-#define JUMP_UR 5
-#define JUMP_DL 6
-#define JUMP_DR 7
+// // option
+// #define UP_LEFT 0
+// #define UP_RIGHT 1
+// #define DOWN_LEFT 2
+// #define DOWN_RIGHT 3
+// #define JUMP_UL 4
+// #define JUMP_UR 5
+// #define JUMP_DL 6
+// #define JUMP_DR 7
 
 #define MAX_BYTE 10000
 #define TO_STRING(x) "%" #x "[^\n]"
 #define LINE_FORMAT(l) TO_STRING(l)
+#define MAX_STEP 15
 
 #define START "START"
 #define PLACE "PLACE"
@@ -35,16 +35,16 @@ typedef int OPTION;
 
 struct Command
 {
-    int x;
-    int y;
-    OPTION option;
+    int x[MAX_STEP];
+    int y[MAX_STEP];
+    int numStep;
 };
 
 char board[BOARD_SIZE][BOARD_SIZE] = {0};
 int me_flag;
 int other_flag;
 
-const int DIR[8][2] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}, {-2, -2}, {-2, 2}, {2, -2}, {2, 2}};
+// const int DIR[8][2] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}, {-2, -2}, {-2, 2}, {2, -2}, {2, 2}};
 
 void debug(const char *str)
 {
@@ -54,7 +54,7 @@ void debug(const char *str)
 
 void printBoard()
 {
-    char visual_board[BOARD_SIZE][BOARD_SIZE] = {0};
+    char visual_board[BOARD_SIZE][BOARD_SIZE + 1] = {0};
     for (int i = 0; i < BOARD_SIZE; i++)
     {
         for (int j = 0; j < BOARD_SIZE; j++)
@@ -81,16 +81,6 @@ BOOL isInBound(int x, int y)
     return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
 }
 
-int max(int a, int b)
-{
-    return a > b ? a : b;
-}
-
-int min (int a, int b)
-{
-    return a < b ? a : b;
-}
-
 /**
  * YOUR CODE BEGIN
  * 你的代码开始
@@ -108,34 +98,34 @@ void initAI(int me)
 {
 }
 
-struct Command findValidPos(const char board[BOARD_SIZE][BOARD_SIZE], int flag)
-{
-    struct Command command = {0, 0, 0};
-    for (int k = 0; k < 8; k++)
-    {
-        const int *delta = DIR[k];
-        for (int x = 0; x < BOARD_SIZE; x++)
-        {
-            for (int y = 0; y < BOARD_SIZE; y++)
-            {
-                if (board[x][y] != flag)
-                {
-                    continue;
-                }
-                int new_x = x + delta[0];
-                int new_y = y + delta[1];
-                if (isInBound(new_x, new_y) && board[new_x][new_y] == EMPTY)
-                {
-                    command.x = x;
-                    command.y = y;
-                    command.option = k;
-                    return command;
-                }
-            }
-        }
-    }
-    return command;
-}
+// struct Command findValidPos(const char board[BOARD_SIZE][BOARD_SIZE], int flag)
+// {
+//     struct Command command = {0, 0, 0};
+//     for (int k = 0; k < 8; k++)
+//     {
+//         const int *delta = DIR[k];
+//         for (int x = 0; x < BOARD_SIZE; x++)
+//         {
+//             for (int y = 0; y < BOARD_SIZE; y++)
+//             {
+//                 if (board[x][y] != flag)
+//                 {
+//                     continue;
+//                 }
+//                 int new_x = x + delta[0];
+//                 int new_y = y + delta[1];
+//                 if (isInBound(new_x, new_y) && board[new_x][new_y] == EMPTY)
+//                 {
+//                     command.x = x;
+//                     command.y = y;
+//                     command.option = k;
+//                     return command;
+//                 }
+//             }
+//         }
+//     }
+//     return command;
+// }
 
 /**
  * 轮到你落子。
@@ -143,26 +133,30 @@ struct Command findValidPos(const char board[BOARD_SIZE][BOARD_SIZE], int flag)
  * me表示你所代表的棋子(1或2)
  * 你需要返回一个结构体Command，在x属性和y属性填上你想要移动的棋子的位置，option填上你想要移动的方向。
  */
-struct Command aiTurn(const char board[BOARD_SIZE][BOARD_SIZE], int me)
-{
-    /*
-     * TODO：在这里写下你的AI。
-     * 这里有一个示例AI，它只会寻找第一个可下的位置进行落子。
-     */
-    struct Command preferedPos = findValidPos(board, me);
+// struct Command aiTurn(const char board[BOARD_SIZE][BOARD_SIZE], int me)
+// {
+//     /*
+//      * TODO：在这里写下你的AI。
+//      * 这里有一个示例AI，它只会寻找第一个可下的位置进行落子。
+//      */
+//     struct Command preferedPos = findValidPos(board, me);
 
-    return preferedPos;
-}
+//     return preferedPos;
+// }
 
-void place(int x0, int y0, int x1, int y1, int cur_flag)
+void place(struct Command cmd, int cur_flag)
 {
     int x_mid, y_mid;
-    board[x0][y0] = EMPTY;
-    board[x1][y1] = cur_flag;
-    x_mid = (x0 + y0) / 2;
-    y_mid = (y0 + y1) / 2; 
-    if (x_mid != min(x0, x1)) {
-        board[x_mid][y_mid] = 0;
+    for (int i = 0; i < cmd.numStep - 1; i++)
+    {
+        board[cmd.x[i]][cmd.y[i]] = EMPTY;
+        board[cmd.x[i + 1]][cmd.y[i + 1]] = cur_flag;
+        if (abs(cmd.x[i] - cmd.x[i + 1]) == 2)
+        {
+            x_mid = (cmd.x[i] - cmd.x[i + 1]) / 2;
+            y_mid = (cmd.y[i] - cmd.y[i + 1]) / 2;
+            board[x_mid][y_mid] = EMPTY;
+        }
     }
 }
 
@@ -217,8 +211,10 @@ void loop()
     //  freopen("../input", "r", stdin);
     char tag[10] = {0};
     char buffer[MAX_BYTE + 1] = {0};
-    int x0, y0, x1, y1, step;
-    OPTION option;
+    struct Command command = {
+        .x = {0},
+        .y = {0},
+        .numStep = 0};
     while (TRUE)
     {
         memset(tag, 0, sizeof(tag));
@@ -234,14 +230,11 @@ void loop()
         }
         else if (strcmp(tag, PLACE) == 0)
         {
-            scanf("%d", &step);
-            scanf("%d,%d", &x0, &y0);
-            for (int i = 1; i < step; i++)
+            scanf("%d", &command.numStep);
+            for (int i = 0; i < command.numStep; i++)
             {
-                scanf("%d,%d", &x1, &y1);
-                place(x0, y0, x1, y1, other_flag);
-                x0 = x1;
-                y0 = y1;
+                scanf("%d,%d", &command.x[i], &command.y[i]);
+                place(command, other_flag);
             }
         }
         // else if (strcmp(tag, TURN)  == 0)
