@@ -13,16 +13,6 @@ typedef int BOOL;
 #define TRUE 1
 #define FALSE 0
 
-// // option
-// #define UP_LEFT 0
-// #define UP_RIGHT 1
-// #define DOWN_LEFT 2
-// #define DOWN_RIGHT 3
-// #define JUMP_UL 4
-// #define JUMP_UR 5
-// #define JUMP_DL 6
-// #define JUMP_DR 7
-
 #define MAX_BYTE 10000
 #define TO_STRING(x) "%" #x "[^\n]"
 #define LINE_FORMAT(l) TO_STRING(l)
@@ -43,8 +33,6 @@ struct Command
 char board[BOARD_SIZE][BOARD_SIZE] = {0};
 int me_flag;
 int other_flag;
-
-// const int DIR[8][2] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}, {-2, -2}, {-2, 2}, {2, -2}, {2, 2}};
 
 void debug(const char *str)
 {
@@ -98,51 +86,24 @@ void initAI(int me)
 {
 }
 
-// struct Command findValidPos(const char board[BOARD_SIZE][BOARD_SIZE], int flag)
-// {
-//     struct Command command = {0, 0, 0};
-//     for (int k = 0; k < 8; k++)
-//     {
-//         const int *delta = DIR[k];
-//         for (int x = 0; x < BOARD_SIZE; x++)
-//         {
-//             for (int y = 0; y < BOARD_SIZE; y++)
-//             {
-//                 if (board[x][y] != flag)
-//                 {
-//                     continue;
-//                 }
-//                 int new_x = x + delta[0];
-//                 int new_y = y + delta[1];
-//                 if (isInBound(new_x, new_y) && board[new_x][new_y] == EMPTY)
-//                 {
-//                     command.x = x;
-//                     command.y = y;
-//                     command.option = k;
-//                     return command;
-//                 }
-//             }
-//         }
-//     }
-//     return command;
-// }
-
 /**
  * 轮到你落子。
  * 棋盘上0表示空白，1表示黑棋，2表示白旗
  * me表示你所代表的棋子(1或2)
- * 你需要返回一个结构体Command，在x属性和y属性填上你想要移动的棋子的位置，option填上你想要移动的方向。
+ * 你需要返回一个结构体Command，其中numStep是你要移动的棋子经过的格子数（含起点、终点），
+ * x、y分别是该棋子依次经过的每个格子的横、纵坐标
  */
-// struct Command aiTurn(const char board[BOARD_SIZE][BOARD_SIZE], int me)
-// {
-//     /*
-//      * TODO：在这里写下你的AI。
-//      * 这里有一个示例AI，它只会寻找第一个可下的位置进行落子。
-//      */
-//     struct Command preferedPos = findValidPos(board, me);
-
-//     return preferedPos;
-// }
+struct Command aiTurn(const char board[BOARD_SIZE][BOARD_SIZE], int me)
+{
+    /*
+     * TODO：在这里写下你的AI。
+     */
+    struct Command command = {
+        .x = {0},
+        .y = {0},
+        .numStep = 0};
+    return command;
+}
 
 void place(struct Command cmd, int cur_flag)
 {
@@ -189,14 +150,19 @@ void start(int flag)
     initAI(flag);
 }
 
-// void turn()
-// {
-//     // AI
-//     struct Command command = aiTurn((const char(*)[BOARD_SIZE])board, me_flag);
-//     place(command.x, command.y, command.option, me_flag);
-//     printf("%d %d %d\n", command.x, command.y, command.option);
-//     fflush(stdout);
-// }
+void turn()
+{
+    // AI
+    struct Command command = aiTurn((const char(*)[BOARD_SIZE])board, me_flag);
+    place(command, me_flag);
+    printf("%d", command.numStep);
+    for (int i = 0; i < command.numStep; i++)
+    {
+        printf(" %d,%d", command.x[i], command.y[i]);
+    }
+    printf("\n");
+    fflush(stdout);
+}
 
 void end(int x)
 {
@@ -237,10 +203,10 @@ void loop()
                 place(command, other_flag);
             }
         }
-        // else if (strcmp(tag, TURN)  == 0)
-        // {
-        //     turn();
-        // }
+        else if (strcmp(tag, TURN) == 0)
+        {
+            turn();
+        }
         // else if (strcmp(tag, END) == 0)
         // {
         //     scanf("%d", &x);
