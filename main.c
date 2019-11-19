@@ -78,8 +78,8 @@ void place(struct Command cmd, int cur_flag)
         board[cmd.x[i + 1]][cmd.y[i + 1]] = cur_flag;
         if (abs(cmd.x[i] - cmd.x[i + 1]) == 2)
         {
-            x_mid = (cmd.x[i] - cmd.x[i + 1]) / 2;
-            y_mid = (cmd.y[i] - cmd.y[i + 1]) / 2;
+            x_mid = (cmd.x[i] + cmd.x[i + 1]) / 2;
+            y_mid = (cmd.y[i] + cmd.y[i + 1]) / 2;
             board[x_mid][y_mid] = EMPTY;
         }
     }
