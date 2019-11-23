@@ -14,8 +14,6 @@ typedef int BOOL;
 #define FALSE 0
 
 #define MAX_BYTE 10000
-#define TO_STRING(x) "%" #x "[^\n]"
-#define LINE_FORMAT(l) TO_STRING(l)
 #define MAX_STEP 15
 
 #define START "START"
@@ -176,7 +174,6 @@ void loop()
 {
     //  freopen("../input", "r", stdin);
     char tag[10] = {0};
-    char buffer[MAX_BYTE + 1] = {0};
     struct Command command = {
         .x = {0},
         .y = {0},
@@ -185,7 +182,6 @@ void loop()
     while (TRUE)
     {
         memset(tag, 0, sizeof(tag));
-        memset(buffer, 0, sizeof(buffer));
         scanf("%s", tag);
         if (strcmp(tag, START) == 0)
         {
