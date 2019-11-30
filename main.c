@@ -5,8 +5,11 @@
 // board information
 #define BOARD_SIZE 8
 #define EMPTY 0
-#define ENEMY_FLAG 1
 #define MY_FLAG 2
+#define MY_KING 4
+#define ENEMY_FLAG 1
+#define ENEMY_KING 3
+
 
 // bool
 typedef int BOOL;
@@ -43,17 +46,24 @@ void printBoard()
     {
         for (int j = 0; j < BOARD_SIZE; j++)
         {
-            if (board[i][j] == EMPTY)
-            {
-                visualBoard[i][j] = '.';
-            }
-            else if (board[i][j] == ENEMY_FLAG)
-            {
-                visualBoard[i][j] = 'O';
-            }
-            else if (board[i][j] == MY_FLAG)
-            {
-                visualBoard[i][j] = 'X';
+            switch (board[i][j]) {
+                case EMPTY:
+                    visualBoard[i][j] = '.';
+                    break;
+                case ENEMY_FLAG:
+                    visualBoard[i][j] = 'O';
+                    break;
+                case MY_FLAG:
+                    visualBoard[i][j] = 'X';
+                    break;
+                case ENEMY_KING:
+                    visualBoard[i][j] = '@';
+                    break;
+                case MY_KING:
+                    visualBoard[i][j] = '*';
+                    break;
+                default:
+                    break;
             }
         }
         printf("%s\n", visualBoard[i]);
