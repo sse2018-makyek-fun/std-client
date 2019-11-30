@@ -5,8 +5,8 @@
 // board information
 #define BOARD_SIZE 8
 #define EMPTY 0
-#define BLACK 1
-#define WHITE 2
+#define ENEMY_FLAG 1
+#define MY_FLAG 2
 
 // bool
 typedef int BOOL;
@@ -28,8 +28,7 @@ struct Command
 };
 
 char board[BOARD_SIZE][BOARD_SIZE] = {0};
-int meFlag;
-int otherFlag;
+int myFlag;
 
 void debug(const char *str)
 {
@@ -48,11 +47,11 @@ void printBoard()
             {
                 visualBoard[i][j] = '.';
             }
-            else if (board[i][j] == BLACK)
+            else if (board[i][j] == ENEMY_FLAG)
             {
                 visualBoard[i][j] = 'O';
             }
-            else if (board[i][j] == WHITE)
+            else if (board[i][j] == MY_FLAG)
             {
                 visualBoard[i][j] = 'X';
             }
@@ -66,9 +65,19 @@ BOOL isInBound(int x, int y)
     return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
 }
 
-void place(struct Command cmd, int curFlag)
+void rotateCommand(struct Command *cmd) {
+    if (myFlag == ENEMY_FLAG) {
+        for (int i = 0; i < cmd->numStep; i++) {
+            cmd->x[i] = BOARD_SIZE - 1 - cmd->x[i];
+            cmd->y[i] = BOARD_SIZE - 1 - cmd->y[i];
+        }
+    }
+}
+
+void place(struct Command cmd)
 {
-    int xMid, yMid;
+    int xMid, yMid, curFlag;
+    curFlag = board[cmd.x[0]][cmd.y[0]];
     for (int i = 0; i < cmd.numStep - 1; i++)
     {
         board[cmd.x[i]][cmd.y[i]] = EMPTY;
@@ -114,7 +123,12 @@ struct Command aiTurn(const char board[BOARD_SIZE][BOARD_SIZE], int me)
     struct Command command = {
         .x = {0},
         .y = {0},
-        .numStep = 0};
+        .numStep = 1};
+    command.x[0] = 2;
+    command.x[1] = 3;
+    command.y[0] = 7;
+    command.y[1] = 6;
+    command.numStep++;
     return command;
 }
 
@@ -137,14 +151,14 @@ void start(int flag)
     {
         for (int j = 0; j < 8; j += 2)
         {
-            board[i][j + (i + 1) % 2] = WHITE;
+            board[i][j + (i + 1) % 2] = MY_FLAG;
         }
     }
     for (int i = 5; i < 8; i++)
     {
         for (int j = 0; j < 8; j += 2)
         {
-            board[i][j + (i + 1) % 2] = BLACK;
+            board[i][j + (i + 1) % 2] = ENEMY_FLAG;
         }
     }
 
@@ -154,8 +168,9 @@ void start(int flag)
 void turn()
 {
     // AI
-    struct Command command = aiTurn((const char(*)[BOARD_SIZE])board, meFlag);
-    place(command, meFlag);
+    struct Command command = aiTurn((const char(*)[BOARD_SIZE])board, myFlag);
+    place(command);
+    rotateCommand(&command);
     printf("%d", command.numStep);
     for (int i = 0; i < command.numStep; i++)
     {
@@ -167,6 +182,7 @@ void turn()
 
 void end(int x)
 {
+    exit(0);
 }
 
 void loop()
@@ -183,9 +199,8 @@ void loop()
         scanf("%s", tag);
         if (strcmp(tag, START) == 0)
         {
-            scanf("%d", &meFlag);
-            otherFlag = 3 - meFlag;
-            start(meFlag);
+            scanf("%d", &myFlag);
+            start(myFlag);
             printf("OK\n");
             fflush(stdout);
         }
@@ -196,7 +211,8 @@ void loop()
             {
                 scanf("%d,%d", &command.x[i], &command.y[i]);
             }
-            place(command, otherFlag);
+            rotateCommand(&command);
+            place(command);
         }
         else if (strcmp(tag, TURN) == 0)
         {
@@ -207,6 +223,7 @@ void loop()
             scanf("%d", &status);
             end(status);
         }
+        printBoard();
     }
 }
 
