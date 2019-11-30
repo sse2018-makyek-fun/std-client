@@ -195,8 +195,8 @@ void loop()
             for (int i = 0; i < command.numStep; i++)
             {
                 scanf("%d,%d", &command.x[i], &command.y[i]);
-                place(command, otherFlag);
             }
+            place(command, otherFlag);
         }
         else if (strcmp(tag, TURN) == 0)
         {
