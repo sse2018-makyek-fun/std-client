@@ -76,14 +76,23 @@ BOOL isInBound(int x, int y)
     return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
 }
 
-void rotateCommand(struct Command *cmd) {
-    if (myFlag == ENEMY_FLAG)
-    {
-        for (int i = 0; i < cmd->numStep; i++)
-        {
+void rotateCommand(struct Command *cmd)
+{
+    if (myFlag == ENEMY_FLAG) {
+        for (int i = 0; i < cmd->numStep; i++) {
             cmd->x[i] = BOARD_SIZE - 1 - cmd->x[i];
             cmd->y[i] = BOARD_SIZE - 1 - cmd->y[i];
         }
+    }
+}
+
+void copyCommand(struct Command *srcCmd, struct Command *tgtCmd)
+{
+    tgtCmd->numStep = srcCmd->numStep;
+    for (int i = 0; i < srcCmd->numStep; i++)
+    {
+        tgtCmd->x[i]  = srcCmd->x[i];
+        tgtCmd->y[i]  = srcCmd->y[i];
     }
 }
 
