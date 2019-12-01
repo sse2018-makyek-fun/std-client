@@ -35,7 +35,8 @@ int myFlag;
 int moveDir[4][2] = {{1, -1}, {1, 1}, {-1, -1}, {-1, 1}};
 int jumpDir[4][2] = {{2, -2}, {2, 2}, {-2, -2}, {-2, 2}};
 struct Command moveCmd = { .x={0}, .y={0}, .numStep=2 };
-struct Command jumpCmd = { .x={0}, .y={0}, .numStep=1 };
+struct Command jumpCmd = { .x={0}, .y={0}, .numStep=0 };
+struct Command longestJumpCmd = { .x={0}, .y={0}, .numStep=0 };
 
 void debug(const char *str)
 {
@@ -109,6 +110,37 @@ int tryToMove(int x, int y)
         }
     }
     return -1;
+}
+
+void tryToJump(int x, int y, int currentStep)
+{
+    int newX, newY, midX, midY;
+    char tmpFlag;
+    jumpCmd.x[currentStep] = x;
+    jumpCmd.y[currentStep] = y;
+    jumpCmd.numStep++;
+    for (int i = 0; i < 4; i++)
+    {
+        newX = x + jumpDir[i][0];
+        newY = y + jumpDir[i][1];
+        midX = (x + newX) / 2;
+        midY = (y + newY) / 2;
+        if (isInBound(newX, newY) && (board[midX][midY] & 1) && (board[newX][newY] == EMPTY))
+        {
+            board[newX][newY] = board[x][y];
+            board[x][y] = EMPTY;
+            tmpFlag = board[midX][midY];
+            board[midX][midY] = EMPTY;
+            tryToJump(newX, newY, currentStep + 1);
+            board[x][y] = board[newX][newY];
+            board[newX][newY] = EMPTY;
+            board[midX][midY] = tmpFlag;
+        }
+    }
+    if (jumpCmd.numStep > longestJumpCmd.numStep) {
+        memcpy(&longestJumpCmd, &jumpCmd, sizeof(struct Command));
+    }
+    jumpCmd.numStep--;
 }
 
 void place(struct Command cmd)
@@ -271,6 +303,5 @@ void loop()
 
 int main(int argc, char *argv[])
 {
-    loop();
     return 0;
 }
