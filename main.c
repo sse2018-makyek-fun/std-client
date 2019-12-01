@@ -138,7 +138,8 @@ void tryToJump(int x, int y, int currentStep)
             board[midX][midY] = tmpFlag;
         }
     }
-    if (jumpCmd.numStep > longestJumpCmd.numStep) {
+    if (jumpCmd.numStep > longestJumpCmd.numStep)
+    {
         memcpy(&longestJumpCmd, &jumpCmd, sizeof(struct Command));
     }
     jumpCmd.numStep--;
@@ -161,6 +162,17 @@ void place(struct Command cmd)
                 myFlag--;
             }
             board[midX][midY] = EMPTY;
+        }
+    }
+    for (int i = 0; i < BOARD_SIZE; i++)
+    {
+        if (board[0][i] == ENEMY_FLAG)
+        {
+            board[0][i] = ENEMY_KING;
+        }
+        if (board[BOARD_SIZE - 1][i] == MY_FLAG)
+        {
+            board[BOARD_SIZE - 1][i] = MY_KING;
         }
     }
 }
