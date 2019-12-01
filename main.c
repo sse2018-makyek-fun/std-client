@@ -92,16 +92,6 @@ void rotateCommand(struct Command *cmd)
     }
 }
 
-void copyCommand(struct Command *srcCmd, struct Command *tgtCmd)
-{
-    tgtCmd->numStep = srcCmd->numStep;
-    for (int i = 0; i < srcCmd->numStep; i++)
-    {
-        tgtCmd->x[i]  = srcCmd->x[i];
-        tgtCmd->y[i]  = srcCmd->y[i];
-    }
-}
-
 int tryToMove(int x, int y)
 {
     int newX, newY;
