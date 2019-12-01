@@ -32,6 +32,10 @@ struct Command
 
 char board[BOARD_SIZE][BOARD_SIZE] = {0};
 int myFlag;
+int moveDir[4][2] = {{1, -1}, {1, 1}, {-1, -1}, {-1, 1}};
+int jumpDir[4][2] = {{2, -2}, {2, 2}, {-2, -2}, {-2, 2}};
+struct Command moveCmd = { .x={0}, .y={0}, .numStep=2 };
+struct Command jumpCmd = { .x={0}, .y={0}, .numStep=1 };
 
 void debug(const char *str)
 {
@@ -78,8 +82,10 @@ BOOL isInBound(int x, int y)
 
 void rotateCommand(struct Command *cmd)
 {
-    if (myFlag == ENEMY_FLAG) {
-        for (int i = 0; i < cmd->numStep; i++) {
+    if (myFlag == ENEMY_FLAG)
+    {
+        for (int i = 0; i < cmd->numStep; i++)
+        {
             cmd->x[i] = BOARD_SIZE - 1 - cmd->x[i];
             cmd->y[i] = BOARD_SIZE - 1 - cmd->y[i];
         }
@@ -94,6 +100,25 @@ void copyCommand(struct Command *srcCmd, struct Command *tgtCmd)
         tgtCmd->x[i]  = srcCmd->x[i];
         tgtCmd->y[i]  = srcCmd->y[i];
     }
+}
+
+int tryToMove(int x, int y)
+{
+    int newX, newY;
+    for (int i = 0; i < board[x][y]; i++)
+    {
+        newX = x + moveDir[i][0];
+        newY = y + moveDir[i][1];
+        if (isInBound(newX, newY) && board[newX][newY] == EMPTY)
+        {
+            moveCmd.x[0] = x;
+            moveCmd.y[0] = y;
+            moveCmd.x[1] = newX;
+            moveCmd.y[1] = newY;
+            return i;
+        }
+    }
+    return -1;
 }
 
 void place(struct Command cmd)
@@ -128,6 +153,7 @@ void place(struct Command cmd)
  */
 void initAI(int me)
 {
+    
 }
 
 /**
@@ -185,7 +211,7 @@ void start(int flag)
             board[i][j + (i + 1) % 2] = ENEMY_FLAG;
         }
     }
-
+    
     initAI(flag);
 }
 
