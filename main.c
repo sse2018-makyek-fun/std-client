@@ -46,7 +46,8 @@ void printBoard()
     {
         for (int j = 0; j < BOARD_SIZE; j++)
         {
-            switch (board[i][j]) {
+            switch (board[i][j])
+            {
                 case EMPTY:
                     visualBoard[i][j] = '.';
                     break;
@@ -76,8 +77,10 @@ BOOL isInBound(int x, int y)
 }
 
 void rotateCommand(struct Command *cmd) {
-    if (myFlag == ENEMY_FLAG) {
-        for (int i = 0; i < cmd->numStep; i++) {
+    if (myFlag == ENEMY_FLAG)
+    {
+        for (int i = 0; i < cmd->numStep; i++)
+        {
             cmd->x[i] = BOARD_SIZE - 1 - cmd->x[i];
             cmd->y[i] = BOARD_SIZE - 1 - cmd->y[i];
         }
@@ -130,10 +133,12 @@ struct Command aiTurn(const char board[BOARD_SIZE][BOARD_SIZE], int me)
     /*
      * TODO：在这里写下你的AI。
      */
-    struct Command command = {
+    struct Command command =
+    {
         .x = {0},
         .y = {0},
-        .numStep = 1};
+        .numStep = 1
+    };
     command.x[0] = 2;
     command.x[1] = 3;
     command.y[0] = 7;
@@ -198,10 +203,12 @@ void end(int x)
 void loop()
 {
     char tag[10] = {0};
-    struct Command command = {
+    struct Command command =
+    {
         .x = {0},
         .y = {0},
-        .numStep = 0};
+        .numStep = 0
+    };
     int status;
     while (TRUE)
     {
