@@ -34,9 +34,10 @@ char board[BOARD_SIZE][BOARD_SIZE] = {0};
 int myFlag;
 int moveDir[4][2] = {{1, -1}, {1, 1}, {-1, -1}, {-1, 1}};
 int jumpDir[4][2] = {{2, -2}, {2, 2}, {-2, -2}, {-2, 2}};
+int numMyFlag;
 struct Command moveCmd = { .x={0}, .y={0}, .numStep=2 };
 struct Command jumpCmd = { .x={0}, .y={0}, .numStep=0 };
-struct Command longestJumpCmd = { .x={0}, .y={0}, .numStep=0 };
+struct Command longestJumpCmd = { .x={0}, .y={0}, .numStep=1 };
 
 void debug(const char *str)
 {
@@ -145,7 +146,7 @@ void tryToJump(int x, int y, int currentStep)
 
 void place(struct Command cmd)
 {
-    int xMid, yMid, curFlag;
+    int midX, midY, curFlag;
     curFlag = board[cmd.x[0]][cmd.y[0]];
     for (int i = 0; i < cmd.numStep - 1; i++)
     {
@@ -153,9 +154,13 @@ void place(struct Command cmd)
         board[cmd.x[i + 1]][cmd.y[i + 1]] = curFlag;
         if (abs(cmd.x[i] - cmd.x[i + 1]) == 2)
         {
-            xMid = (cmd.x[i] + cmd.x[i + 1]) / 2;
-            yMid = (cmd.y[i] + cmd.y[i + 1]) / 2;
-            board[xMid][yMid] = EMPTY;
+            midX = (cmd.x[i] + cmd.x[i + 1]) / 2;
+            midY = (cmd.y[i] + cmd.y[i + 1]) / 2;
+            if ((board[midX][midY] & 1) == 0)
+            {
+                myFlag--;
+            }
+            board[midX][midY] = EMPTY;
         }
     }
 }
@@ -175,7 +180,7 @@ void place(struct Command cmd)
  */
 void initAI(int me)
 {
-    
+    numMyFlag = 12;
 }
 
 /**
@@ -194,13 +199,37 @@ struct Command aiTurn(const char board[BOARD_SIZE][BOARD_SIZE], int me)
     {
         .x = {0},
         .y = {0},
-        .numStep = 1
+        .numStep = 0
     };
-    command.x[0] = 2;
-    command.x[1] = 3;
-    command.y[0] = 7;
-    command.y[1] = 6;
-    command.numStep++;
+    int numChecked = 0;
+    int maxStep = 1;
+    for (int i = 0; i < BOARD_SIZE; i++)
+    {
+        for (int j = 0; j < BOARD_SIZE; j++)
+        {
+            if (board[i][j] > 0 && (board[i][j] & 1) == 0)
+            {
+                numChecked++;
+                longestJumpCmd.numStep = 1;
+                tryToJump(i, j, 0);
+                if (longestJumpCmd.numStep > maxStep)
+                {
+                    memcpy(&command, &longestJumpCmd, sizeof(struct Command));
+                }
+                if (command.numStep == 0)
+                {
+                    if (tryToMove(i, j) >= 0)
+                    {
+                        memcpy(&command, &moveCmd, sizeof(struct Command));
+                    }
+                }
+            }
+            if (numChecked >= numMyFlag)
+            {
+                return command;
+            }
+        }
+    }
     return command;
 }
 
@@ -303,5 +332,6 @@ void loop()
 
 int main(int argc, char *argv[])
 {
+    loop();
     return 0;
 }
