@@ -159,7 +159,7 @@ void place(struct Command cmd)
             midY = (cmd.y[i] + cmd.y[i + 1]) / 2;
             if ((board[midX][midY] & 1) == 0)
             {
-                myFlag--;
+                numMyFlag--;
             }
             board[midX][midY] = EMPTY;
         }
